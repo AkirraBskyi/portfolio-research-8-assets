@@ -7,13 +7,15 @@ from . import config
 FACTORS = ["Mkt-RF", "SMB", "HML", "RMW", "CMA"]
 
 
-def ff5_regression(returns, ff5, end=None):
+def ff5_regression(returns, ff5, end=None, start=None):
     """R_i - RF = alpha + b1*Mkt-RF + b2*SMB + b3*HML + b4*RMW + b5*CMA + e.
 
     alpha возвращается годовой (дневная константа * 252).
     `end` (необязательно) ограничивает окно регрессии последней датой включительно.
     """
     data = returns.join(ff5, how="inner")
+    if start is not None:
+        data = data.loc[start:]
     if end is not None:
         data = data.loc[:end]
     x = sm.add_constant(data[FACTORS])

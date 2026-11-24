@@ -10,5 +10,8 @@ def test_reproduces_published_numbers(returns, ff5):
 
 def test_pipeline_keys(returns, ff5):
     res = report.run_pipeline(returns, ff5, config.FF_FIXED_END)
-    for k in ("risk", "ff5", "capm", "weights", "delta", "pi", "tangency", "var_1d", "var_21d", "stress"):
+    for k in ("risk", "ff5", "capm", "weights", "delta", "pi", "tangency", "var_1d", "var_21d", "stress",
+              "lookthrough", "spy_full", "spy_test", "holdout", "alpha_halves"):
         assert k in res
+    assert res["lookthrough"].loc["NVDA", "total"] > res["lookthrough"].loc["NVDA", "direct"]
+    assert len(res["holdout"]) == 6

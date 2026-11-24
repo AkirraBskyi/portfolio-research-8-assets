@@ -25,6 +25,17 @@
 | `plots.py` | `make_all(out_dir, returns, ...)` -> создаёт 6 PNG: `correlation_matrix.png, beta_bars.png, risk_decomposition.png, efficient_frontier.png, var_cvar_comparison.png, stress_scenarios.png` (подписи на английском) |
 | `__main__.py` | `python -m portfolio_lab [--fixed]` печатает все таблицы, пишет графики в `charts/` |
 
+## v2: проверка вне выборки, сравнение со SPY, look-through
+
+| Модуль | Функции |
+|---|---|
+| `lookthrough.py` | `effective_exposure(weights, spy_share=None, qqq_share=None)` -> DataFrame (NVDA, MSFT) с колонками `direct, via_spy, via_qqq, total`; `via_x = w_x * доля акции в фонде x` |
+| `benchmark.py` | `max_drawdown(r)`; `split(r, start)` -> (train, test); `compare_to_spy(returns, port_ret, rf, start=None)`; `var_holdout(port_ret, split_date, budget)` -> пробои VaR, оценённого на train, на test; `alpha_halves(returns, ff5, end, split_date)` -> альфа NVDA по FF5 на train и test |
+| `plots.py` | + `portfolio_vs_spy.png`, `lookthrough_exposure.png` (всего 8 графиков) |
+
+Конфиг: `QQQ_SHARE` (NVDA 8.15%, MSFT 5.31%, Trackinsight на 2026-05-31), `HOLDOUT_START = 2025-09-26`.
+Результаты v2 эталонов не имеют (новые блоки), проверяются логикой и ручными примерами.
+
 ## Допущения (в README описать честно)
 - Rf = 4.2%, ERP = 4.29% (из CAPM опубликованных чисел: (12.98 - 4.2) / 2.044), бюджет €2000.
 - Веса: двухуровневая конструкция из `config` (55/15/15/10/5; NVDA 8.3%, MSFT 4.6% от акционного блока; SPY:QQQ из опубликованных весов).

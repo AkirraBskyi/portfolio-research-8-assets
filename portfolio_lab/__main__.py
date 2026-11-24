@@ -41,6 +41,12 @@ def main():
     st["pct"] *= 100
     print("\n== Stress scenarios (pct, EUR) ==\n", st)
 
+    print("\n== Look-through exposure (share of portfolio) ==\n", res["lookthrough"])
+    print("\n== Model portfolio vs SPY, full window ==\n", res["spy_full"])
+    print(f"\n== Model portfolio vs SPY, hold-out from {config.HOLDOUT_START} ==\n", res["spy_test"])
+    print("\n== VaR fitted on train, breaches on hold-out ==\n", res["holdout"])
+    print("\n== NVDA Fama-French alpha, train vs hold-out ==\n", res["alpha_halves"])
+
     if args.fixed:
         cmp = report.compare_with_published(res)
         print("\n== Published vs reproduced ==\n", cmp.to_string(index=False))

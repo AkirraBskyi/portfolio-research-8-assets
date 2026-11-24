@@ -1,7 +1,8 @@
 from portfolio_lab import plots
 
 FILES = ["correlation_matrix.png", "beta_bars.png", "risk_decomposition.png",
-         "efficient_frontier.png", "var_cvar_comparison.png", "stress_scenarios.png"]
+         "efficient_frontier.png", "var_cvar_comparison.png", "stress_scenarios.png",
+         "portfolio_vs_spy.png", "lookthrough_exposure.png"]
 
 
 def test_make_all(tmp_path, returns):

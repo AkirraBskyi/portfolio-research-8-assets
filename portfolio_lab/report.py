@@ -1,7 +1,8 @@
 """Полный прогон пайплайна и сверка с опубликованными числами."""
 import pandas as pd
 
-from . import black_litterman as bl, capm, config, factors, frontier, risk, stress, var
+from . import (benchmark, black_litterman as bl, capm, config, factors, frontier, lookthrough,
+               risk, stress, var)
 
 
 def run_pipeline(returns, ff5, ff_end=None):
@@ -26,6 +27,12 @@ def run_pipeline(returns, ff5, ff_end=None):
         "var_1d": var.summary_table(pr, config.BUDGET_EUR, 1),
         "var_21d": var.summary_table(pr, config.BUDGET_EUR, config.MONTH_DAYS),
         "stress": stress.run_all(w, config.BUDGET_EUR),
+        "lookthrough": lookthrough.effective_exposure(w),
+        "spy_full": benchmark.compare_to_spy(returns, pr, config.RF),
+        "spy_test": benchmark.compare_to_spy(returns, pr, config.RF, start=config.HOLDOUT_START),
+        "holdout": benchmark.var_holdout(pr, config.HOLDOUT_START, config.BUDGET_EUR),
+        "alpha_halves": benchmark.alpha_halves(returns, ff5, ff_end or returns.index.max(),
+                                               config.HOLDOUT_START),
     }
 
 

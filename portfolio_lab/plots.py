@@ -5,8 +5,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
-from . import black_litterman as bl, config, frontier, risk, stress, var
+from . import black_litterman as bl, config, frontier, lookthrough, risk, stress, var
 
 BLUE, ORANGE, GREEN, RED, AMBER, GRAY = "#2a78d6", "#ec6a35", "#1aaf7a", "#e24b4b", "#eca200", "#8a8f98"
 
@@ -122,8 +123,41 @@ def stress_scenarios(out_dir):
     _save(fig, out_dir, "stress_scenarios.png")
 
 
+def portfolio_vs_spy(returns, out_dir):
+    pr = var.portfolio_returns(returns, bl.market_weights())
+    cut = pd.Timestamp(config.HOLDOUT_START)
+    fig, ax = plt.subplots(figsize=(8.5, 4.6))
+    ax.plot((1 + pr).cumprod() * 100, color=BLUE, lw=2, label="Model portfolio (assumed weights)")
+    ax.plot((1 + returns[config.MARKET]).cumprod() * 100, color=ORANGE, lw=2, label="SPY")
+    ax.axvline(cut, color=GRAY, ls="--", lw=1.2)
+    ax.axvspan(cut, returns.index.max(), color=GRAY, alpha=0.12)
+    ax.text(cut, ax.get_ylim()[0] + 2, "  hold-out year", fontsize=9, color=GRAY, va="bottom")
+    ax.set_ylabel("Growth of 100 (constant weights)")
+    ax.set_title("Model portfolio vs SPY", fontweight="bold")
+    ax.legend(loc="upper left")
+    ax.grid(alpha=0.3)
+    _save(fig, out_dir, "portfolio_vs_spy.png")
+
+
+def lookthrough_exposure(out_dir):
+    t = lookthrough.effective_exposure(bl.market_weights()) * 100
+    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    bottoms = np.zeros(len(t))
+    for col, color, label in (("direct", BLUE, "Held directly"), ("via_spy", ORANGE, "Inside SPY"),
+                              ("via_qqq", GREEN, "Inside QQQ")):
+        ax.bar(t.index, t[col], bottom=bottoms, color=color, label=label, width=0.5)
+        bottoms += t[col].values
+    for i, tot in enumerate(t["total"]):
+        ax.text(i, tot + 0.2, f"{tot:.1f}%", ha="center", fontweight="bold")
+    ax.set_ylabel("% of portfolio")
+    ax.set_title("Look-through exposure: direct vs effective", fontweight="bold")
+    ax.legend()
+    ax.grid(axis="y", alpha=0.3)
+    _save(fig, out_dir, "lookthrough_exposure.png")
+
+
 def make_all(out_dir, returns):
-    """Создаёт 6 PNG в out_dir."""
+    """Создаёт 8 PNG в out_dir."""
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     correlation_matrix(returns, out_dir)
     beta_bars(returns, out_dir)
@@ -131,3 +165,5 @@ def make_all(out_dir, returns):
     efficient_frontier(returns, out_dir)
     var_cvar_comparison(returns, out_dir)
     stress_scenarios(out_dir)
+    portfolio_vs_spy(returns, out_dir)
+    lookthrough_exposure(out_dir)
