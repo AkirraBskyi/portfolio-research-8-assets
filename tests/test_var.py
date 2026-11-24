@@ -38,7 +38,7 @@ def test_cvar_not_below_var(port_ret):
 def test_parametric_understates_tail(port_ret):
     h = var.historical(port_ret, B)[0.99]["cvar"]
     p = var.parametric(port_ret, B)[0.99]["cvar"]
-    assert 0.15 < (h - p) / h < 0.35        # около 24% в опубликованном исследовании
+    assert 0.15 < (h - p) / h < 0.35        # (46.19 - 36.40) / 46.19 = 21%
 
 
 def test_bootstrap_reproducible(port_ret):

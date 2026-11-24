@@ -52,7 +52,7 @@ def risk_decomposition(returns, out_dir):
     ax.bar(t.index, t["sys_vol"] * 100, color=BLUE, label="Systematic (to SPY)", width=0.6)
     ax.bar(t.index, t["idio_vol"] * 100, bottom=t["sys_vol"] * 100, color=ORANGE,
            label="Idiosyncratic", width=0.6)
-    ax.set_ylabel("Annual volatility (%), stacked for display")
+    ax.set_ylabel("Annual volatility (%), stacked for display\n(variances add, not volatilities)")
     ax.set_title("Risk decomposition: systematic vs idiosyncratic", fontweight="bold")
     ax.legend()
     ax.grid(axis="y", alpha=0.3)
